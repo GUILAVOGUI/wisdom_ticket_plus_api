@@ -1,0 +1,40 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Distribution directory
+dist/
+build/
+
+# Environment variables
+.env
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.bak
+*.swp
+*.swo
+
+# Compiled files
+*.min.js
+*.min.css
+
+# Coverage output
+coverage/
+.nyc_output/
+
+# Type declaration files
+*.d.ts
+.vercel
