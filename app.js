@@ -38,8 +38,10 @@ mongoose
 
 // Routes
 const userRoutes = require('./routes/userRoutes');
+const shopRoutes = require('./routes/shopRoutes');
  
 app.use('/api', userRoutes);
+app.use('/api', shopRoutes);
 
  
 

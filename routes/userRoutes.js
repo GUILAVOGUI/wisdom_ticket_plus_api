@@ -31,11 +31,19 @@ const checkAccess = (requiredEndpoint) => {
 
 
 router.post('/users', userController.createUser);
-router.get('/users', userController.getAllUsers);
+router.get('/users', authMiddlewareUsers, userController.getAllUsers);
 router.get('/users/:id', userController.getUserById);
 router.put('/users/:id', userController.updateUserById);
 router.delete('/users/:id', authAdminMiddleware, userController.deleteUserById);
 
+
+//   Special Actions
+router.post('/users/:id/actions', userController.addAction);
+router.delete('/users/:id/actions/:action', userController.removeAction);
+
+
+// Login route
+router.post('/users/login',  userController.login);
 
 
 

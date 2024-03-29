@@ -24,6 +24,7 @@ exports.createUser = async (req, res) => {
         const saltRounds = 10;
         const hashedSecretCode = await bcrypt.hash(secretCode, saltRounds);
         const hashedPINCode = await bcrypt.hash(pinCode, saltRounds);
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         // Create user instance
         const user = new User({
@@ -32,7 +33,7 @@ exports.createUser = async (req, res) => {
             name,
             gender,
             dateOfBirth,
-            password,
+            password: hashedPassword,
             secretCode: hashedSecretCode,
             pinCode: hashedPINCode,
             agentCode
@@ -110,3 +111,87 @@ exports.deleteUserById = async (req, res) => {
         res.status(500).json({ status: 'error', message: err.message });
     }
 };
+
+
+
+// Controller for adding an action to a user
+exports.addAction = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const { action } = req.body;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ status: 'fail', message: 'User not found' });
+        }
+
+        user.actions.push(action);
+        await user.save();
+
+        res.status(200).json({ status: 'success', message: 'Action added to the user' });
+    } catch (err) {
+        res.status(400).json({ status: 'fail', message: err.message });
+    }
+};
+
+// Controller for removing an action from a user
+exports.removeAction = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const actionToRemove = req.params.action;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ status: 'fail', message: 'User not found' });
+        }
+
+        user.actions = user.actions.filter(action => action !== actionToRemove);
+        await user.save();
+
+        res.status(200).json({ status: 'success', message: 'Action removed from the user' });
+    } catch (err) {
+        res.status(400).json({ status: 'fail', message: err.message });
+    }
+};
+
+
+
+exports.login = async (req, res) => {
+    const { phoneNumber, password } = req.body;
+
+    try {
+        const user = await User.findOne({ phoneNumber });
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const tokenPayload = {
+            userId: user._id,
+            role: user.role,
+            phoneNumber: user.phoneNumber,
+            signature: user._id + process.env.JWT_SECRET
+        };
+
+        const token = jwt.sign(tokenPayload, process.env.JWT_SECRET);
+
+        // Update user token
+        user.token = token;
+        await user.save();
+
+        // Prepare response
+        const { _id: userID, name: userName, token: userToken, role: userRole, userSpecialRole, type: userType, imageProfile } = user;
+        const userIDString = String(userID); // Convert userID to a string
+        const lastSixDigitsOfUserID = userIDString.slice(-6); // Extract the last 6 digits
+        res.header('Authorization', `Bearer ${token}`).json({ userID: lastSixDigitsOfUserID, userName, userToken, userRole, userType, userSpecialRole, imageProfile });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Failed to login' });
+    }
+};
+

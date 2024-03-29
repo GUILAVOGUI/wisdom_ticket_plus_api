@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
     topicsOfInterest: [String],
     type: {
         type: String,
-        enum: ['Super Admin', 'Admin', 'Agent Monitoring', 'Organizer', 'Normal User'],
+        enum: ['Super Admin', 'Admin', 'Agent Monitoring', 'Organizer','ShopOwner', 'Normal User'],
         default: 'Normal User'
     },
     purchaseHistory: [{
@@ -55,7 +55,8 @@ const userSchema = new mongoose.Schema({
     transactionHistory: [{
         type: String
     }],
-    token: String // Add token field
+    token: String ,// Add token field
+    actions: [String] // Add actions field
 });
 
 // Hashing password before saving to the database

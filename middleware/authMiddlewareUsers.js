@@ -45,7 +45,7 @@ const authMiddleware = async (req, res, next) => {
 
         // Attach the user object to the request for use in controllers
         req.user = user;
-        req.tel = user.tel;
+        req.phoneNumber = user.phoneNumber;
         req.userName = user.name;
         req.type = user.type;
         req.id = user.id;
