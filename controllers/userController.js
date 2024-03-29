@@ -99,6 +99,29 @@ exports.updateUserById = async (req, res) => {
 };
 
 
+// Admin Controller for updating a user by ID
+exports.updateUserByIdByAdmin = async (req, res) => {
+    try {
+        const {...updateData } = req.body;
+        // Exclude the fields that should not be updated
+        const allowedUpdates = { ...updateData };
+
+        const user = await User.findByIdAndUpdate(req.params.id, allowedUpdates, {
+            new: true,
+            runValidators: true
+        });
+
+        if (!user) {
+            return res.status(404).json({ status: 'fail', message: 'User not found' });
+        }
+
+        res.status(200).json({ status: 'success', data: user });
+    } catch (err) {
+        res.status(400).json({ status: 'fail', message: err.message });
+    }
+};
+
+
 // Controller for deleting a user by ID
 exports.deleteUserById = async (req, res) => {
     try {

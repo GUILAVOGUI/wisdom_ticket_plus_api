@@ -39,9 +39,11 @@ mongoose
 // Routes
 const userRoutes = require('./routes/userRoutes');
 const shopRoutes = require('./routes/shopRoutes');
+const eventRoutes = require('./routes/eventRoutes');
  
 app.use('/api', userRoutes);
 app.use('/api', shopRoutes);
+app.use('/api', eventRoutes);
 
  
 

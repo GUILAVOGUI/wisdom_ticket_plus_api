@@ -11,15 +11,16 @@ const isShopOwnerMiddlewareShop = require('../middleware/shopMiddleware/isShopOw
 
 
 router.post('/shops', isShopOwnerMiddlewareShop, authMiddlewareUsers, shopController.createShop);
-router.get('/shops', shopController.getAllShops);
-router.get('/shops/:id', shopController.getShopById);
+router.get('/shops', authAdminMiddleware, shopController.getAllShops);
+router.get('/shops/:id', authMiddlewareUsers,shopController.getShopById);
 router.patch('/shops/:id', shopController.updateShopById);
 router.delete('/shops/:id', shopController.deleteShopById);
 
 
 // New endpoints for creating and updating items in a shop
-router.post('/shops/:shopId/items', shopController.createItemInShop);
-router.patch('/shops/:shopId/items/:itemId', shopController.updateItemInShop);
+router.post('/shops/:shopId/items', isShopOwnerMiddlewareShop,authMiddlewareUsers, shopController.createItemInShop);
+router.put('/shops/:shopId/items/:itemId', isShopOwnerMiddlewareShop, authMiddlewareUsers, shopController.updateItemInShop);
+router.delete('/shops/:shopId/items/:itemId', isShopOwnerMiddlewareShop, authMiddlewareUsers, shopController.deleteItemInShop); // New endpoint for deleting an item
 
 
 

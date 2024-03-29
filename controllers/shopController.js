@@ -14,19 +14,6 @@ exports.createShop = async (req, res) => {
             return res.status(404).json({ status: 'fail', message: 'User not found' });
         }
 
-        // // Validate if all shop partners exist and fetch their names
-        // const partnerIds = shopPartners.map(partner => partner.userId);
-        // const partners = await User.find({ _id: { $in: partnerIds } });
-        // if (partners.length !== shopPartners.length) {
-        //     return res.status(404).json({ status: 'fail', message: 'One or more shop partners not found' });
-        // }
-
-        // // Map partner IDs to partner names
-        // const partnersWithNames = shopPartners.map(partner => {
-        //     const partnerInfo = partners.find(p => p._id.equals(partner.userId));
-        //     return { userId: partner.userId, name: partnerInfo ? partnerInfo.name : 'Unknown' };
-        // });
-
         const shop = await Shop.create({
             shopOwner: userId,
             shopOwnerName: shopOwnerName,
@@ -54,15 +41,26 @@ exports.getAllShops = async (req, res) => {
 // Controller for getting a single shop by ID
 exports.getShopById = async (req, res) => {
     try {
+        const userId = req.id; // Assuming userId is available in req.id
         const shop = await Shop.findById(req.params.id);
+        const user = await User.findById(userId);
+
+
         if (!shop) {
             return res.status(404).json({ status: 'fail', message: 'Shop not found' });
         }
+
+        // Check if the requesting user is the shop owner
+        if (String(shop.shopOwner) !== userId && user.type !== 'Admin' && user.type !=='Super Admin'  ) {
+            return res.status(403).json({ status: 'fail', message: 'Unauthorized access' });
+        }
+
         res.status(200).json({ status: 'success', data: shop });
     } catch (err) {
         res.status(500).json({ status: 'error', message: err.message });
     }
 };
+
 
 // Controller for updating a shop by ID
 exports.updateShopById = async (req, res) => {
@@ -98,13 +96,20 @@ exports.deleteShopById = async (req, res) => {
 exports.createItemInShop = async (req, res) => {
     try {
         const { name, price, image, stocks } = req.body;
-        const shopId = req.params.shopId;
+        const userId = req.id; // Assuming userId is available in req.id
 
+        const shopId = req.params.shopId;
+        const user = await User.findById(userId);
+      
         const newItem = { name, price, image, stocks };
 
         const shop = await Shop.findById(shopId);
         if (!shop) {
             return res.status(404).json({ status: 'fail', message: 'Shop not found' });
+        }
+
+        if (String(shop.shopOwner) !== userId) {
+            return res.status(403).json({ status: 'fail', message: 'Unauthorized access' });
         }
 
         shop.items.push(newItem);
@@ -116,16 +121,22 @@ exports.createItemInShop = async (req, res) => {
     }
 };
 
+
 // Controller for updating an item in a shop by ID
 exports.updateItemInShop = async (req, res) => {
     try {
         const { name, price, image, stocks } = req.body;
         const shopId = req.params.shopId;
         const itemId = req.params.itemId;
-
+        const userId = req.id; // Assuming userId is available in req.id
+        const user = await User.findById(userId);
+       
         const shop = await Shop.findById(shopId);
         if (!shop) {
             return res.status(404).json({ status: 'fail', message: 'Shop not found' });
+        }
+        if (String(shop.shopOwner) !== userId) {
+            return res.status(403).json({ status: 'fail', message: 'Unauthorized access' });
         }
 
         const item = shop.items.id(itemId);
@@ -141,6 +152,38 @@ exports.updateItemInShop = async (req, res) => {
         await shop.save();
 
         res.status(200).json({ status: 'success', data: item });
+    } catch (err) {
+        res.status(400).json({ status: 'fail', message: err.message });
+    }
+};
+
+
+
+
+// Controller for deleting an item from a shop by ID
+exports.deleteItemInShop = async (req, res) => {
+    try {
+        const shopId = req.params.shopId;
+        const itemId = req.params.itemId;
+        const userId = req.id; // Assuming userId is available in req.id
+        const user = await User.findById(userId);
+
+        const shop = await Shop.findById(shopId);
+        if (!shop) {
+            return res.status(404).json({ status: 'fail', message: 'Shop not found' });
+        }
+        if (String(shop.shopOwner) !== userId) {
+            return res.status(403).json({ status: 'fail', message: 'Unauthorized access' });
+        }
+
+        // Find the item by ID and delete it directly from the database
+        const deletedItem = await Shop.findByIdAndUpdate(shopId, { $pull: { items: { _id: itemId } } }, { new: true });
+
+        if (!deletedItem) {
+            return res.status(404).json({ status: 'fail', message: 'Item not found' });
+        }
+
+        res.status(200).json({ status: 'success', message: 'Item deleted successfully', deletedItem });
     } catch (err) {
         res.status(400).json({ status: 'fail', message: err.message });
     }

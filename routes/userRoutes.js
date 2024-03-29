@@ -34,8 +34,12 @@ router.post('/users', userController.createUser);
 router.get('/users', authMiddlewareUsers, userController.getAllUsers);
 router.get('/users/:id', userController.getUserById);
 router.put('/users/:id', userController.updateUserById);
+
+// Admin
 router.delete('/users/:id', authAdminMiddleware, userController.deleteUserById);
 
+// Admin
+router.put('/users/:id/adminupdateuser', authAdminMiddleware,userController.updateUserByIdByAdmin)
 
 //   Special Actions
 router.post('/users/:id/actions', userController.addAction);
