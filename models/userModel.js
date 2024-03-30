@@ -2,6 +2,26 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+
+// Define a sub-schema for linked account
+const linkedAccountSchema = new mongoose.Schema({
+    socialMediaName: String,
+    link: String
+});
+
+// Define a sub-schema for user information
+const userInfoSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    name: String,
+    phoneNumber: String,
+    gender: String,
+    address: String
+});
+
+
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -45,6 +65,10 @@ const userSchema = new mongoose.Schema({
         shopName: String,
         item: String
     }],
+    teamMember: [{
+        memberStatus: String,   // Ticket status field
+        userInfo: userInfoSchema  // Sub-schema for user information
+    }],
     notifications: [String],
     complainHistory: [String],
     paymentMethod: [{
@@ -55,8 +79,12 @@ const userSchema = new mongoose.Schema({
     transactionHistory: [{
         type: String
     }],
-    token: String ,// Add token field
-    actions: [String] // Add actions field
+    token: String,// Add token field
+    aboutUs: String,
+    pageURL: String,
+    billingPlan: String ,
+    actions: [String],// Add actions field
+    linkedAccount: [linkedAccountSchema] // Array of linked accounts
 });
 
 // Hashing password before saving to the database

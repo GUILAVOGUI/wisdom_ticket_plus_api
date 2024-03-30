@@ -1,5 +1,56 @@
 const mongoose = require('mongoose');
 
+
+
+// Define a sub-schema for the ticket details
+const ticketSchema = new mongoose.Schema({
+    type: String,
+    price: Number,
+    availableAmount: Number
+});
+
+// Define a sub-schema for the validity details
+const validitySchema = new mongoose.Schema({
+    type: String,       // Type of ticket the promo will apply to
+    startDate: Date,    // Start date of validity period
+    endDate: Date       // End date of validity period
+});
+
+
+// Define a sub-schema for the items
+const itemSchema = new mongoose.Schema({
+    _id: mongoose.Schema.Types.ObjectId, // MongoDB ObjectId for the item
+    name: String,
+    price: Number,
+    quantity: Number
+});
+
+// Define a sub-schema for revenue with currency
+const revenueSchema = new mongoose.Schema({
+    amount: {
+        type: Number,
+        required: true
+    },
+    currency: {
+        type: String,
+        required: true
+    }
+});
+
+
+// Define a sub-schema for user information
+const userInfoSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    name: String,
+    phoneNumber: String,
+    gender: String,
+    address: String
+});
+
+
 const eventSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -13,23 +64,31 @@ const eventSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    date: {
+    startDate: {
         type: Date,
         required: true
     },
-    time: {
+    endDate: {
+        type: Date,
+        required: true
+    },
+    startTime: {
+        type: String,
+        required: true
+    }, 
+    EndTime: {
         type: String,
         required: true
     },
+    maximumCapacity: {
+        type: Number,
+        required: true
+    }, 
     address: {
         type: String,
         required: true
     },
-    priceRange: {
-        regular: Number,
-        VIP: Number,
-        VVIP: Number
-    },
+    priceRange: [ticketSchema] ,
     numberOfPurchase: {
         type: Number,
         default: 0
@@ -45,6 +104,7 @@ const eventSchema = new mongoose.Schema({
     promoCodes: [{
         code: String,
         validity: {
+            type: validitySchema,  // Sub-schema for validity details
             period: Date,
             firstAmount: Number,
             quantity: Number,
@@ -61,22 +121,24 @@ const eventSchema = new mongoose.Schema({
         required: true
     },
     shopPartners: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Shop'
+        shopId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Shop'
+        },
+        requestStatus: String,
+        items: [itemSchema] // Array of items with MongoDB ObjectId
     }],
     purchaseCondition: String,
     attendeesFeedback: [{
-        userInfo: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
-        content: String
+        userInfo: userInfoSchema, // Sub-schema for user information
+        content: String,
+        feebackStatus: {
+            type: String,
+            default: 'Approved'
+        }
     }],
     attendeesRates: [{
-        userInfo: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
+        userInfo: userInfoSchema , // Sub-schema for user information
         rate: Number
     }],
     shares: {
@@ -87,19 +149,31 @@ const eventSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    accessList: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
+   
     ticketsList: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Ticket'
+        ticketId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Ticket'
+        },
+        ticketStatus: String,   // Ticket status field
+        userInfo: userInfoSchema  // Sub-schema for user information
+    }],
+    teamMember: [{
+        memberStatus: String,   // Ticket status field
+        userInfo: userInfoSchema  // Sub-schema for user information
     }],
     coverImage: {
         type: String,
         required: true
     },
-    eventImages: [String] // Array of image links
+    ticketsSold: {
+        type: Number,
+        required: false
+    },
+    revenues: [revenueSchema], // Array of revenues with currency
+
+    eventImages: [String] ,// Array of image links
+    tags: [String] // Array of image links
 });
 
 const Event = mongoose.model('Event', eventSchema);
