@@ -341,7 +341,7 @@ exports.deleteTicketFromList = async (req, res) => {
 // Controller for adding a team member
 exports.addTeamMember = async (req, res) => {
     try {
-        const { memberStatus, userInfo } = req.body;
+        const { memberStatus, memberRole,userInfo } = req.body;
         const eventId = req.params.eventId;
 
         const event = await Event.findById(eventId);
@@ -349,11 +349,12 @@ exports.addTeamMember = async (req, res) => {
             return res.status(404).json({ status: 'fail', message: 'Event not found' });
         }
 
-        event.teamMember.push({ memberStatus, userInfo });
+        event.teamMember.push({ memberStatus, memberRole, userInfo });
         await event.save();
 
         res.status(200).json({ status: 'success', data: event });
     } catch (err) {
+        console.log(err);
         res.status(400).json({ status: 'fail', message: err.message });
     }
 };
@@ -390,7 +391,14 @@ exports.addRevenue = async (req, res) => {
             return res.status(404).json({ status: 'fail', message: 'Event not found' });
         }
 
-        event.revenues.push({ amount, currency });
+        let existingRevenue = event.revenues.find(revenue => revenue.currency === currency);
+
+        if (existingRevenue) {
+            existingRevenue.amount += amount;
+        } else {
+            event.revenues.push({ amount, currency });
+        }
+
         await event.save();
 
         res.status(200).json({ status: 'success', data: event });
@@ -398,6 +406,7 @@ exports.addRevenue = async (req, res) => {
         res.status(400).json({ status: 'fail', message: err.message });
     }
 };
+
 
 // Controller for deleting a revenue
 exports.deleteRevenue = async (req, res) => {

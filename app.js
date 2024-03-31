@@ -40,10 +40,12 @@ mongoose
 const userRoutes = require('./routes/userRoutes');
 const shopRoutes = require('./routes/shopRoutes');
 const eventRoutes = require('./routes/eventRoutes');
- 
+const ticketRoutes = require('./routes/ticketRoutes');
+
 app.use('/api', userRoutes);
 app.use('/api', shopRoutes);
 app.use('/api', eventRoutes);
+app.use('/api', ticketRoutes);
 
  
 

@@ -22,13 +22,13 @@ router.post('/events/:eventId/attendeesFeedback', eventController.addAttendeesFe
 router.delete('/events/:eventId/attendeesFeedback/:feedbackId', isEventOwnerMiddlewareEvent, eventController.deleteAttendeesFeedback);
 
 // Adding/deleting attendeesRates
-router.post('/events/:eventId/attendeesRates', eventController.addAttendeesRate);
+router.post('/events/:eventId/attendeesRates', authMiddlewareUsers,eventController.addAttendeesRate);
 router.delete('/events/:eventId/attendeesRates/:rateId', eventController.deleteAttendeesFeedback);
 
 // Define route for deleting attendeesRates
 
 // Adding/updating/deleting promoCodes
-router.post('/events/:eventId/promoCodes', eventController.addPromoCode);
+router.post('/events/:eventId/promoCodes', authMiddlewareUsers, isEventOwnerMiddlewareEvent, eventController.addPromoCode);
 router.delete('/events/:eventId/promoCodes/:promoId', eventController.deletePromoCode);
 // Define route for updating promoCodes
 
@@ -37,16 +37,16 @@ router.post('/events/:eventId/shopPartners', eventController.addShopPartner);
 router.delete('/events/:eventId/shopPartners/:shopId', eventController.deleteShopPartner);
 
 // Routes for adding and deleting items in ticketsList
-router.post('/:eventId/tickets', eventController.addTicketToList);
-router.delete('/:eventId/tickets/:ticketId', eventController.deleteTicketFromList);
+router.post('/events/:eventId/tickets', eventController.addTicketToList);
+router.delete('/events/:eventId/tickets/:ticketId', eventController.deleteTicketFromList);
 
 // Routes for adding and deleting team members
-router.post('/:eventId/team-members', eventController.addTeamMember);
-router.delete('/:eventId/team-members/:userId', eventController.deleteTeamMember);
+router.post('/events/:eventId/team-members', authMiddlewareUsers,eventController.addTeamMember);
+router.delete('/events/:eventId/team-members/:userId', eventController.deleteTeamMember);
 
 // Routes for adding and deleting revenues
-router.post('/:eventId/revenues', eventController.addRevenue);
-router.delete('/:eventId/revenues/:revenueId', eventController.deleteRevenue);
+router.post('/events/:eventId/revenues', eventController.addRevenue);
+router.delete('/events/:eventId/revenues/:revenueId', eventController.deleteRevenue);
 
 
 

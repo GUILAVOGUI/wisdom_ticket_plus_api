@@ -160,6 +160,7 @@ const eventSchema = new mongoose.Schema({
     }],
     teamMember: [{
         memberStatus: String,   // Ticket status field
+        memberRole: String,   // Ticket status field
         userInfo: userInfoSchema  // Sub-schema for user information
     }],
     coverImage: {
