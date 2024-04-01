@@ -103,13 +103,12 @@ const eventSchema = new mongoose.Schema({
     },
     promoCodes: [{
         code: String,
+        firstAmount: Number,
+        quantity: Number,
+        reductionAmount: Number,
         validity: {
             type: validitySchema,  // Sub-schema for validity details
-            period: Date,
-            firstAmount: Number,
-            quantity: Number,
-            reductionAmount: Number
-        }
+           }
     }],
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,

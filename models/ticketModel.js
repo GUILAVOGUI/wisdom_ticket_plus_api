@@ -29,6 +29,10 @@ const itemSchema = new mongoose.Schema({
     name: String,
     quantity: Number,
     price: Number,
+    isItemScannedSuccess: {
+        type: Boolean,
+        default: false
+    },
     userInfo: guestInfoSchema
 });
 
@@ -52,6 +56,10 @@ const ticketSchema = new mongoose.Schema({
         ticketType: String,
         currency: String,
         price: Number,
+        isTicketScannedSuccess: {
+            type: Boolean,
+            default: false
+        },
         guest:guestInfoSchema,
     }],
     ticketOwner: userInfoSchema,

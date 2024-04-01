@@ -27,6 +27,7 @@ exports.createEvent = async (req, res) => {
         const ownerId = req.id; // Assuming the user ID is available in the request object
         const ownerName = req.userName; // Assuming the user name is available in the request object
 
+        
         const event = await Event.create({
             title,
             description,
