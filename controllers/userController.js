@@ -2,12 +2,15 @@ const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+
 // Controller for creating a new user
 
 exports.createUser = async (req, res) => {
-    try {
-        const { email, phoneNumber, name, gender, dateOfBirth, password, type, secretCode, pinCode, agentCode } = req.body;
 
+    console.log('createUser');
+    try {
+        const { email, phoneNumber, name, gender, dateOfBirth, password } = req.body;
+        const type = 'Normal_User'
         // Check if a user with the same phone number already exists
         const existingUser = await User.findOne({ phoneNumber: phoneNumber });
         const existingUserByEmail = await User.findOne({ email: email });
@@ -16,16 +19,14 @@ exports.createUser = async (req, res) => {
         }
 
         // Check if the user is trying to create an admin type
-        if (type !== 'Normal User') {
+        if (type !== 'Normal_User') {
             return res.status(400).json({ error: 'Error: Cannot create user with this type' });
         }
 
-        // Hash secret code and PIN code
+        // Hash Password code and PIN code
         const saltRounds = 10;
-        const hashedSecretCode = await bcrypt.hash(secretCode, saltRounds);
-        const hashedPINCode = await bcrypt.hash(pinCode, saltRounds);
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-
+        console.log(`hashedPassword ${hashedPassword}`);
         // Create user instance
         const user = new User({
             email,
@@ -33,11 +34,10 @@ exports.createUser = async (req, res) => {
             name,
             gender,
             dateOfBirth,
-            password: hashedPassword,
-            secretCode: hashedSecretCode,
-            pinCode: hashedPINCode,
-            agentCode
+            password: hashedPassword
         });
+
+        console.log(`user password ${user.password}`);
 
         // Generate JWT token
         const tokenPayload = { userId: user._id, type: user.type, phoneNumber: user.phoneNumber };
@@ -49,9 +49,102 @@ exports.createUser = async (req, res) => {
 
         res.status(201).json({ status: 'success', data: user, token });
     } catch (err) {
+        console.log(err);
         res.status(400).json({ status: 'fail', message: err.message });
     }
 };
+
+
+// Controller for login
+// exports.login = async (req, res) => {
+//     try {
+//         const { phoneNumber, password } = req.body;
+
+//         // Check if a user with the provided phone number exists
+//         const user = await User.findOne({ phoneNumber });
+
+//         if (!user) {
+//             return res.status(401).json({ error: 'User not found' });
+//         }
+
+//         console.log('Stored Password Hash:', user.password); // Debugging statement
+ 
+//         // Check if the provided password hash matches the stored password hash
+//         const passwordMatch = await bcrypt.compare(password, user.password);
+//         console.log(`passwordMatch ${passwordMatch}`);
+//         if (!passwordMatch) {
+//             return res.status(401).json({ error: 'Invalid password' });
+//         }
+
+//         // Generate JWT token
+//         const tokenPayload = { userId: user._id, type: user.type, phoneNumber: user.phoneNumber };
+//         const token = jwt.sign(tokenPayload, process.env.JWT_SECRET);
+
+//         // Update user's token and save
+//         user.token = token;
+//         await user.save();
+
+//                 // Prepare response
+//                 const { _id: userID, name: userName, token: userToken, role: userRole, userSpecialRole, type: userType, imageProfile } = user;
+//                 const userIDString = String(userID); // Convert userID to a string
+//                 const lastSixDigitsOfUserID = userIDString.slice(-6); // Extract the last 6 digits
+//                 res.header('Authorization', `Bearer ${token}`).json({ userID: lastSixDigitsOfUserID, userName, userToken, userRole, userType, userSpecialRole, imageProfile });
+
+
+//         res.status(200).json({ status: 'success', data: user, token });
+//     } catch (err) {
+//         res.status(400).json({ status: 'fail', message: err.message });
+//     }
+// };
+
+
+exports.login = async (req, res) => {
+    const { phoneNumber, password } = req.body;
+    console.log(`phoneNumber ${phoneNumber}`);
+    console.log(`password ${password}`);
+    console.log('login Endpoint');
+
+    try {
+        const user = await User.findOne({ phoneNumber });
+        if (!user) {
+            console.log('user not found');
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        console.log(user.password);
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            console.log('invalid credentials');
+
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const tokenPayload = {
+            userId: user._id,
+            role: user.role,
+            phoneNumber: user.phoneNumber,
+            signature: user._id + process.env.JWT_SECRET
+        };
+
+        const token = jwt.sign(tokenPayload, process.env.JWT_SECRET);
+
+        // Update user token
+        user.token = token;
+        await user.save();
+
+        // Prepare response
+        const { _id: userID, name: userName, token: userToken, role: userRole, userSpecialRole, type: userType, imageProfile } = user;
+        const userIDString = String(userID); // Convert userID to a string
+        const lastSixDigitsOfUserID = userIDString.slice(-6); // Extract the last 6 digits
+        res.header('Authorization', `Bearer ${token}`).json({ userID: lastSixDigitsOfUserID, userName, userToken, userRole, userType, userSpecialRole, imageProfile });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Failed to login' });
+    }
+};
+
+
 
 // Controller for getting all users
 exports.getAllUsers = async (req, res) => {
@@ -177,44 +270,4 @@ exports.removeAction = async (req, res) => {
     }
 };
 
-
-
-exports.login = async (req, res) => {
-    const { phoneNumber, password } = req.body;
-
-    try {
-        const user = await User.findOne({ phoneNumber });
-        if (!user) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
-
-        const tokenPayload = {
-            userId: user._id,
-            role: user.role,
-            phoneNumber: user.phoneNumber,
-            signature: user._id + process.env.JWT_SECRET
-        };
-
-        const token = jwt.sign(tokenPayload, process.env.JWT_SECRET);
-
-        // Update user token
-        user.token = token;
-        await user.save();
-
-        // Prepare response
-        const { _id: userID, name: userName, token: userToken, role: userRole, userSpecialRole, type: userType, imageProfile } = user;
-        const userIDString = String(userID); // Convert userID to a string
-        const lastSixDigitsOfUserID = userIDString.slice(-6); // Extract the last 6 digits
-        res.header('Authorization', `Bearer ${token}`).json({ userID: lastSixDigitsOfUserID, userName, userToken, userRole, userType, userSpecialRole, imageProfile });
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'Failed to login' });
-    }
-};
 

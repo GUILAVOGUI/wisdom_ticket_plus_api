@@ -58,8 +58,8 @@ const userSchema = new mongoose.Schema({
     topicsOfInterest: [String],
     type: {
         type: String,
-        enum: ['Super Admin', 'Admin', 'Agent Monitoring', 'Organizer','ShopOwner', 'Normal User'],
-        default: 'Normal User'
+        enum: ['Super_Admin', 'Admin', 'Agent_Monitoring', 'Organizer','ShopOwner', 'Normal_User'],
+        default: 'Normal_User'
     },
     purchaseHistory: [{
         shopName: String,
@@ -88,12 +88,12 @@ const userSchema = new mongoose.Schema({
 });
 
 // Hashing password before saving to the database
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
-    const saltRounds = 10;
-    this.password = await bcrypt.hash(this.password, saltRounds);
-    next();
-});
+// userSchema.pre('save', async function (next) {
+//     if (!this.isModified('password')) return next();
+//     const saltRounds = 10;
+//     this.password = await bcrypt.hash(this.password, saltRounds);
+//     next();
+// });
 
 const User = mongoose.model('User', userSchema);
 
