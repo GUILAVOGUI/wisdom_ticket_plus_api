@@ -52,9 +52,10 @@ const authMiddleware = async (req, res, next) => {
 
     
         // console.log(user.role);
-        // console.log(user.name);
+        console.log(user.name);
+        console.log(user.type);
 
-        if (user.type !== 'Admin') {
+        if (user.type !== 'Admin' && user.type !== 'Super_Admin') {
             return res.status(403).json({ error: 'Access denied' });
         }
 

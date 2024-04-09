@@ -41,11 +41,17 @@ const userRoutes = require('./routes/userRoutes');
 const shopRoutes = require('./routes/shopRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
+const locationRoutes = require('./routes/locationRoutes');
+const eventCategoryRoutes = require('./routes/eventCategoryRoutes');
+const privacyRoutes = require('./routes/privacyRoutes');
 
 app.use('/api', userRoutes);
 app.use('/api', shopRoutes);
 app.use('/api', eventRoutes);
 app.use('/api', ticketRoutes);
+app.use('/api', locationRoutes);
+app.use('/api', eventCategoryRoutes);
+app.use('/api', privacyRoutes);
 
  
 
