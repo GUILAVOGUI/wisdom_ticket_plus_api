@@ -23,6 +23,9 @@ router.put('/shops/:shopId/items/:itemId', isShopOwnerMiddlewareShop, authMiddle
 router.delete('/shops/:shopId/items/:itemId', isShopOwnerMiddlewareShop, authMiddlewareUsers, shopController.deleteItemInShop); // New endpoint for deleting an item
 
 
+// Define route for getting shops owned by the user
+router.get('/ownershops', authMiddlewareUsers, shopController.getShopsByUserId);
+
 
 // Add - Delete Shop Parteners
 router.post('/shop/:id/partners', shopController.addPartner);
