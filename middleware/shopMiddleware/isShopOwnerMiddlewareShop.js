@@ -54,7 +54,7 @@ const authMiddleware = async (req, res, next) => {
         // console.log(user.role);
         // console.log(user.name);
 
-        if (user.type !== 'ShopOwner' && user.type !=='Admin' ) {
+        if (user.type !== 'ShopOwner' && user.type !== 'Admin' && user.type !== 'Super_Admin' ) {
             return res.status(403).json({ error: 'Access denied,Not a Shop Owner' });
         }
 

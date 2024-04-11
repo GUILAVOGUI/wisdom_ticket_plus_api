@@ -28,8 +28,8 @@ router.get('/ownershops', authMiddlewareUsers, shopController.getShopsByUserId);
 
 
 // Add - Delete Shop Parteners
-router.post('/shop/:id/partners', shopController.addPartner);
-router.delete('/shop/:id/partners/:partnerId', shopController.removePartner);
+router.post('/shops/:id/partners', isShopOwnerMiddlewareShop, shopController.addPartner);
+router.delete('/shops/:id/partners/:partnerId', shopController.removePartner);
 
 
 module.exports = router;

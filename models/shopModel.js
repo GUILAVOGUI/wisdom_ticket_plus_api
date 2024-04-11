@@ -8,7 +8,7 @@ const shopSchema = new mongoose.Schema({
     },
     shopOwnerName: {
         type: String,
-        required: true,
+        required: false,
         unique: true
     },
     shopName: {
@@ -20,6 +20,7 @@ const shopSchema = new mongoose.Schema({
         name: String,
         price: Number,
         stock: Number,
+        currency: String,
         image: String,
         history: [{
             userName: String,

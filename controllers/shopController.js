@@ -39,19 +39,40 @@ exports.getAllShops = async (req, res) => {
 };
 
 
+// // Controller for getting shops owned by the user
+// exports.getShopsByUserId = async (req, res) => {
+//     try {
+//         const userId = req.id;
+
+//         // Find all shops where the shop owner matches the user's ID
+//         const shops = await Shop.find({ shopOwner: userId });
+
+//         res.status(200).json({ status: 'success', data: shops });
+//     } catch (err) {
+//         res.status(500).json({ status: 'error', message: err.message });
+//     }
+// };
+
 // Controller for getting shops owned by the user
 exports.getShopsByUserId = async (req, res) => {
     try {
         const userId = req.id;
 
         // Find all shops where the shop owner matches the user's ID
-        const shops = await Shop.find({ shopOwner: userId });
+        // or the shopPartners array contains an object with the user's ID
+        const shops = await Shop.find({
+            $or: [
+                { shopOwner: userId },
+                { 'shopPartners.userId': userId }
+            ]
+        });
 
         res.status(200).json({ status: 'success', data: shops });
     } catch (err) {
         res.status(500).json({ status: 'error', message: err.message });
     }
 };
+
 
 
 
@@ -111,23 +132,37 @@ exports.deleteShopById = async (req, res) => {
 
 // Controller for creating a new item in a shop
 exports.createItemInShop = async (req, res) => {
+
+    console.log('createItemInShop');
     try {
-        const { name, price, image, stocks } = req.body;
+        const { name, price, image,currency, stocks } = req.body;
         const userId = req.id; // Assuming userId is available in req.id
 
         const shopId = req.params.shopId;
         const user = await User.findById(userId);
+
+     
       
-        const newItem = { name, price, image, stocks };
+        const newItem = { name, price, image, stocks, currency };
 
         const shop = await Shop.findById(shopId);
+
+        console.log(`${userId}`);
+        console.log(`${shop.shopOwner}`);
+
+        // if (userId !== shop.shopOwner ) {
+        //     return res.status(404).json({ status: 'fail', message: 'not the shop Owner' });
+        // }
+
         if (!shop) {
             return res.status(404).json({ status: 'fail', message: 'Shop not found' });
         }
 
-        if (String(shop.shopOwner) !== userId) {
-            return res.status(403).json({ status: 'fail', message: 'Unauthorized access' });
+
+        if (String(shop.shopOwner) !== String(userId)) {
+            return res.status(404).json({ status: 'fail', message: 'not the shop Owner' });
         }
+
 
         shop.items.push(newItem);
         await shop.save();
@@ -208,11 +243,12 @@ exports.deleteItemInShop = async (req, res) => {
 
 
 
-
 // Controller for adding a new partner to a shop
 exports.addPartner = async (req, res) => {
+    console.log('addPartner');
     try {
         const { userId } = req.body;
+        const tokenUserId = req.userId;
         const shopId = req.params.id;
 
         // Fetch the user details to get the partner's name
@@ -227,13 +263,29 @@ exports.addPartner = async (req, res) => {
             return res.status(404).json({ status: 'fail', message: 'Shop not found' });
         }
 
-        await shop.addPartner(userId, user.name);
+        console.log(`${tokenUserId}`);
+        console.log(`${shop.shopOwner}`);
+
+        if (String(shop.shopOwner) !== String(tokenUserId)) {
+            return res.status(404).json({ status: 'fail', message: 'Not the shop owner' });
+        }
+
+        // Check if the userId already exists as a partner in the shop
+        const existingPartner = shop.shopPartners.find(partner => String(partner.userId) === String(userId));
+        if (existingPartner) {
+            return res.status(400).json({ status: 'fail', message: 'User is already a partner in the shop' });
+        }
+
+        // Add the partner to the shop
+        shop.shopPartners.push({ userId, name: user.name });
+        await shop.save();
 
         res.status(200).json({ status: 'success', message: 'Partner added to the shop' });
     } catch (err) {
         res.status(400).json({ status: 'fail', message: err.message });
     }
 };
+
 
 // Controller for removing a partner from a shop
 exports.removePartner = async (req, res) => {
