@@ -34,7 +34,10 @@ const shopSchema = new mongoose.Schema({
             ref: 'User'
         },
         name: String
-    }]
+    }],
+    creationDate: { type: Date, default: Date.now },
+
+
 });
 
 // Method to add a partner to the shop

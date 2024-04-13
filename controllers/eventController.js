@@ -3,60 +3,38 @@ const User = require('../models/userModel');
 
 // Controller for creating a new event
 exports.createEvent = async (req, res) => {
+    console.log('createEvent');
     try {
         const {
-            title,
-            description,
-            category,
-            startDate,
-            endDate,
-            startTime,
-            EndTime,
-            maximumCapacity,
-            address,
-            priceRange,
-            onPromo,
-            promoCodes,
-            shopPartners,
-            purchaseCondition,
-            coverImage,
-            eventImages,
-            tags
+            eventDetails,
+            privacy,
+            addons,
+            share,
+            promo
         } = req.body;
 
         const ownerId = req.id; // Assuming the user ID is available in the request object
         const ownerName = req.userName; // Assuming the user name is available in the request object
 
-        
         const event = await Event.create({
-            title,
-            description,
-            category,
-            startDate,
-            endDate,
-            startTime,
-            EndTime,
-            maximumCapacity,
-            address,
-            priceRange,
-            onPromo,
-            promoCodes,
+            eventDetails,
+            privacy,
+            addons,
+            share,
+            promo,
             ownerId,
             ownerName,
-            shopPartners,
-            purchaseCondition,
-            coverImage,
-            eventImages,
-            tags,
             numberOfPurchase: 0, // Assuming this field is set to 0 initially
             numberOfLikes: 0, // Assuming this field is set to 0 initially
             shares: 0, // Assuming this field is set to 0 initially
             likes: 0, // Assuming this field is set to 0 initially
             ticketsSold: 0 // Assuming this field is set to 0 initially
         });
+        console.log(`success : data : ${event}`);
 
         res.status(201).json({ status: 'success', data: event });
     } catch (err) {
+        console.log(err);
         res.status(400).json({ status: 'fail', message: err.message });
     }
 };

@@ -82,6 +82,8 @@ const userSchema = new mongoose.Schema({
     token: String,// Add token field
     aboutUs: String,
     pageURL: String,
+    creationDate: { type: Date, default: Date.now },
+
     billingPlan: String ,
     actions: [String],// Add actions field
     linkedAccount: [linkedAccountSchema] // Array of linked accounts

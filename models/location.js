@@ -9,7 +9,9 @@ const locationSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true // Ensure location is unique
-    }
+    },
+    creationDate: { type: Date, default: Date.now },
+
 });
 
 const Location = mongoose.model('Location', locationSchema);

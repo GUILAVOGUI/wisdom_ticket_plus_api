@@ -5,7 +5,10 @@ const privacySchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true // Ensure privacy type is unique
-    }
+    },
+    creationDate: { type: Date, default: Date.now },
+
+
 });
 
 const Privacy = mongoose.model('Privacy', privacySchema);

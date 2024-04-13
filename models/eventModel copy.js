@@ -3,37 +3,37 @@ const mongoose = require('mongoose');
 
 
 // Define a sub-schema for the ticket details
-// const ticketSchema = new mongoose.Schema({
-//     type: String,
-//     price: Number,
-//     availableAmount: Number
-// });
+const ticketSchema = new mongoose.Schema({
+    type: String,
+    price: Number,
+    availableAmount: Number
+});
 
 // Define a sub-schema for the validity details
-// const validitySchema = new mongoose.Schema({
-//     type: String,       // Type of ticket the promo will apply to
-//     startDate: Date,    // Start date of validity period
-//     endDate: Date       // End date of validity period
-// });
+const validitySchema = new mongoose.Schema({
+    type: String,       // Type of ticket the promo will apply to
+    startDate: Date,    // Start date of validity period
+    endDate: Date       // End date of validity period
+});
 
 
 // Define a sub-schema for the items
-// const itemSchema = new mongoose.Schema({
-//     _id: mongoose.Schema.Types.ObjectId, // MongoDB ObjectId for the item
-//     name: String,
-//     price: Number,
-//     quantity: Number
-// });
+const itemSchema = new mongoose.Schema({
+    _id: mongoose.Schema.Types.ObjectId, // MongoDB ObjectId for the item
+    name: String,
+    price: Number,
+    quantity: Number
+});
 
 // Define a sub-schema for revenue with currency
 const revenueSchema = new mongoose.Schema({
     amount: {
         type: Number,
-        required: false
+        required: true
     },
     currency: {
         type: String,
-        required: false
+        required: true
     }
 });
 
@@ -51,67 +51,67 @@ const userInfoSchema = new mongoose.Schema({
 });
 
 
-const validitySchema = new mongoose.Schema({
-    type: String,
-    startDate: Date,
-    endDate: Date
-});
-
-const ticketSchema = new mongoose.Schema({
-    type: String,
-    price: Number,
-    availableAmount: Number
-});
-
-const itemSchema = new mongoose.Schema({
-    name: String,
-    price: Number,
-    currency: String,
-    image: String
-});
-
-const promoSchema = new mongoose.Schema({
-    code: String,
-    status: String,
-    firstAmount: Number,
-    quantity: Number,
-    reductionAmount: Number,
-    validity: validitySchema
-});
-
-
 const eventSchema = new mongoose.Schema({
-    eventDetails: {
-        imageLink: String,
-        eventName: String,
-        category: String,
-        startDate: Date,
-        endDate: Date,
-        startTime: String,
-        endTime: String,
-        location: String,
-        maximumCapacity: Number,
-        tags: [String],
-        eventDescription: String,
-        ticketPrices: [ticketSchema],
-        dateSalesStart: Date,
-        dateSalesEnd: Date
+    title: {
+        type: String,
+        required: true
     },
-    creationDate: { type: Date, default: Date.now },
+    description: {
+        type: String,
+        required: true
+    },
+    category: {
+        type: String,
+        required: true
+    },
+    startDate: {
+        type: Date,
+        required: true
+    },
+    endDate: {
+        type: Date,
+        required: true
+    },
+    startTime: {
+        type: String,
+        required: true
+    }, 
+    EndTime: {
+        type: String,
+        required: true
+    },
+    maximumCapacity: {
+        type: Number,
+        required: true
+    }, 
+    address: {
+        type: String,
+        required: true
+    },
+    priceRange: [ticketSchema] ,
+    numberOfPurchase: {
+        type: Number,
+        default: 0
+    },
+    numberOfLikes: {
+        type: Number,
+        default: 0
+    },
+    onPromo: {
+        type: Boolean,
+        default: false
+    },
+    promoCodes: [{
+        code: String,
+        status: String,
+        firstAmount: Number,
+        quantity: Number,
+        reductionAmount: Number,
+        validity: {
+            type: validitySchema,  // Sub-schema for validity details
+           },
 
-
-    privacy: {
-        privacyText: String
-    },
-    addons: {
-        items: [itemSchema]
-    },
-    share: {
-        socialMediaLinks: [String]
-    },
-    promo: {
-        promoCodes: [promoSchema]
-    },
+    }],
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -164,7 +164,10 @@ const eventSchema = new mongoose.Schema({
         memberRole: String,   // Ticket status field
         userInfo: userInfoSchema  // Sub-schema for user information
     }],
-  
+    coverImage: {
+        type: String,
+        required: true
+    },
     ticketsSold: {
         type: Number,
         required: false
