@@ -49,6 +49,11 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     },
+    status: {
+        type: String,
+
+    },
+
     userProfileImage: {
         type: String,
         default: 'https://res.cloudinary.com/ds1hlry5u/image/upload/v1713581113/qeyflpgbbjvgfejcm8gc.png'
