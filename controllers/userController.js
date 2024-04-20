@@ -132,11 +132,14 @@ exports.login = async (req, res) => {
         user.token = token;
         await user.save();
 
+        // const firstName = user.name.firstName
+        // const lastName = user.name.lastName
+
         // Prepare response
-        const { _id: userID, name: userName, token: userToken, role: userRole, userSpecialRole, type: userType, imageProfile } = user;
+        const { _id: userID, name, token: userToken, role: userRole, userSpecialRole, type: userType, userProfileImage } = user;
         const userIDString = String(userID); // Convert userID to a string
         const lastSixDigitsOfUserID = userIDString.slice(-6); // Extract the last 6 digits
-        res.header('Authorization', `Bearer ${token}`).json({ userID: lastSixDigitsOfUserID, userName, userToken, userRole, userType, userSpecialRole, imageProfile });
+        res.header('Authorization', `Bearer ${token}`).json({ userID: lastSixDigitsOfUserID, name, userToken, userRole, userType, userSpecialRole, userProfileImage });
 
     } catch (error) {
         console.log(error);
@@ -149,6 +152,8 @@ exports.login = async (req, res) => {
 // Controller for getting all users
 exports.getAllUsers = async (req, res) => {
     try {
+        const userId = req.id
+        console.log(userId);
         const users = await User.find();
         res.status(200).json({ status: 'success', data: users });
     } catch (err) {
@@ -269,5 +274,38 @@ exports.removeAction = async (req, res) => {
         res.status(400).json({ status: 'fail', message: err.message });
     }
 };
+ 
 
 
+// Controller for getting company info
+exports.getCompanyInfo = async (req, res) => {
+    try {
+        const userId = req.id
+        console.log(userId);
+        const user = await User.findById(userId);
+        if (!user || !user.companyProfile) {
+            return res.status(404).json({ status: 'error', message: 'Company info not found for this user' });
+        }
+        res.status(200).json({ status: 'success', data: user.companyProfile });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+// Controller for updating company info
+exports.updateCompanyInfo = async (req, res) => {
+    try {
+
+        const userId = req.id
+
+        const { logoImageLink, name, address, contactPhone, contactEmail } = req.body;
+        const user = await User.findByIdAndUpdate(userId, { companyProfile: { logoImageLink, name, address, contactPhone, contactEmail } }, { new: true });
+        if (!user) {
+            return res.status(404).json({ status: 'error', message: 'User not found' });
+        }
+        res.status(200).json({ status: 'success', data: user.companyProfile });
+    } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};

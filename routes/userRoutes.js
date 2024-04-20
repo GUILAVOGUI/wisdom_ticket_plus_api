@@ -31,9 +31,17 @@ const checkAccess = (requiredEndpoint) => {
 
 
 router.post('/users', userController.createUser);
-router.get('/users', authMiddlewareUsers, userController.getAllUsers);
+// router.get('/users', authMiddlewareUsers, userController.getAllUsers);
 router.get('/users/:id', userController.getUserById);
 router.put('/users/:id', userController.updateUserById);
+
+
+
+router.get('/user/company',  authMiddlewareUsers,userController.getCompanyInfo);
+router.put('/user/company',  authMiddlewareUsers,userController.updateCompanyInfo);
+
+
+
 
 // Admin
 router.delete('/users/:id', authAdminMiddleware, userController.deleteUserById);

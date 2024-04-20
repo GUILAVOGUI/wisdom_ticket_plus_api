@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+
 // Define a sub-schema for linked account
 const linkedAccountSchema = new mongoose.Schema({
     socialMediaName: String,
@@ -20,14 +21,6 @@ const userInfoSchema = new mongoose.Schema({
     address: String
 });
 
-// Define a sub-schema for company profile
-const companyProfileSchema = new mongoose.Schema({
-    logoImageLink: String,
-    name: String,
-    address: String,
-    contactPhone: String,
-    contactEmail: String
-});
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -49,10 +42,6 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     },
-    userProfileImage: {
-        type: String,
-        default: 'https://res.cloudinary.com/ds1hlry5u/image/upload/v1713581113/qeyflpgbbjvgfejcm8gc.png'
-    },
     gender: {
         type: String,
         enum: ['Male', 'Female', 'Other']
@@ -69,7 +58,7 @@ const userSchema = new mongoose.Schema({
     topicsOfInterest: [String],
     type: {
         type: String,
-        enum: ['Super_Admin', 'Admin', 'Agent_Monitoring', 'Organizer', 'ShopOwner', 'Normal_User'],
+        enum: ['Super_Admin', 'Admin', 'Agent_Monitoring', 'Organizer','ShopOwner', 'Normal_User'],
         default: 'Normal_User'
     },
     purchaseHistory: [{
@@ -95,11 +84,12 @@ const userSchema = new mongoose.Schema({
     pageURL: String,
     creationDate: { type: Date, default: Date.now },
 
-    billingPlan: String,
+    billingPlan: String ,
     actions: [String],// Add actions field
-    linkedAccount: [linkedAccountSchema], // Array of linked accounts
-    companyProfile: companyProfileSchema // Add company profile field
+    linkedAccount: [linkedAccountSchema] // Array of linked accounts
 });
+
+ 
 
 const User = mongoose.model('User', userSchema);
 

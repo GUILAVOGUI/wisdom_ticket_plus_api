@@ -10,7 +10,8 @@ exports.createEvent = async (req, res) => {
             privacy,
             addons,
             share,
-            promo
+            promo,
+            status
         } = req.body;
 
         const ownerId = req.id; // Assuming the user ID is available in the request object
@@ -22,6 +23,7 @@ exports.createEvent = async (req, res) => {
             addons,
             share,
             promo,
+            status,
             ownerId,
             ownerName,
             numberOfPurchase: 0, // Assuming this field is set to 0 initially

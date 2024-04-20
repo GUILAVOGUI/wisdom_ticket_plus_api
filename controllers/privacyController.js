@@ -3,12 +3,12 @@ const Privacy = require('../models/privacy');
 // Create a new privacy type
 exports.createPrivacy = async (req, res) => {
     try {
-        const { type } = req.body;
+        const { type,title } = req.body;
         const existingPrivacy = await Privacy.findOne({ type });
         if (existingPrivacy) {
             return res.status(400).json({ message: 'Privacy type already exists' });
         }
-        const newPrivacy = new Privacy({ type });
+        const newPrivacy = new Privacy({ type,title });
         await newPrivacy.save();
         res.status(201).json(newPrivacy);
     } catch (err) {

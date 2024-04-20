@@ -86,7 +86,9 @@ const eventSchema = new mongoose.Schema({
         eventName: String,
         category: String,
         startDate: Date,
+        startDateTime: String,
         endDate: Date,
+        endDateTime: String,
         startTime: String,
         endTime: String,
         location: String,
@@ -98,6 +100,10 @@ const eventSchema = new mongoose.Schema({
         dateSalesEnd: Date
     },
     creationDate: { type: Date, default: Date.now },
+    status: {
+        type: String,
+
+    },
 
 
     privacy: {
