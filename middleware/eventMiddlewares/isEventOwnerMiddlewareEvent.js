@@ -65,6 +65,7 @@ const authMiddleware = async (req, res, next) => {
         req.user = user;
         req.tel = user.tel;
         req.userId = user.id;
+        req.ownerProfileImage = user.userProfileImage
 
 
         next();

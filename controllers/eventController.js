@@ -16,6 +16,9 @@ exports.createEvent = async (req, res) => {
 
         const ownerId = req.id; // Assuming the user ID is available in the request object
         const ownerName = req.userName; // Assuming the user name is available in the request object
+        const ownerProfileImage = req.ownerProfileImage
+
+
 
         const event = await Event.create({
             eventDetails,
@@ -26,6 +29,7 @@ exports.createEvent = async (req, res) => {
             status,
             ownerId,
             ownerName,
+            ownerProfileImage,
             numberOfPurchase: 0, // Assuming this field is set to 0 initially
             numberOfLikes: 0, // Assuming this field is set to 0 initially
             shares: 0, // Assuming this field is set to 0 initially

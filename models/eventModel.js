@@ -84,11 +84,15 @@ const eventSchema = new mongoose.Schema({
     eventDetails: {
         imageLink: String,
         eventName: String,
+        isOnline: Boolean,
+        onlineLink: String,
         category: String,
         startDate: Date,
         startDateTime: String,
+        startDateTimeEnd: String,
         endDate: Date,
         endDateTime: String,
+        endDateTimeEnd: String,
         startTime: String,
         endTime: String,
         location: String,
@@ -126,6 +130,9 @@ const eventSchema = new mongoose.Schema({
     ownerName: {
         type: String,
         required: true
+    },
+    ownerProfileImage: {
+        type: String
     },
     shopPartners: [{
         shopId: {
