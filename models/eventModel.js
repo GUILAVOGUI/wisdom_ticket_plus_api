@@ -106,7 +106,7 @@ const eventSchema = new mongoose.Schema({
     creationDate: { type: Date, default: Date.now },
     status: {
         type: String,
-
+        default: 'Validated'
     },
 
 
