@@ -3,7 +3,7 @@ const User = require('../models/userModel');
 
 // Controller for creating a new event
 exports.createEvent = async (req, res) => {
-    console.log('createEvent');
+    // console.log('createEvent');
     try {
         const {
             eventDetails,
@@ -36,7 +36,7 @@ exports.createEvent = async (req, res) => {
             likes: 0, // Assuming this field is set to 0 initially
             ticketsSold: 0 // Assuming this field is set to 0 initially
         });
-        console.log(`success : data : ${event}`);
+        // console.log(`success : data : ${event}`);
 
         res.status(201).json({ status: 'success', data: event });
     } catch (err) {

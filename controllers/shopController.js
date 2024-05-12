@@ -133,7 +133,7 @@ exports.deleteShopById = async (req, res) => {
 // Controller for creating a new item in a shop
 exports.createItemInShop = async (req, res) => {
 
-    console.log('createItemInShop');
+    // console.log('createItemInShop');
     try {
         const { name, price, image,currency, stocks } = req.body;
         const userId = req.id; // Assuming userId is available in req.id
@@ -147,8 +147,8 @@ exports.createItemInShop = async (req, res) => {
 
         const shop = await Shop.findById(shopId);
 
-        console.log(`${userId}`);
-        console.log(`${shop.shopOwner}`);
+        // console.log(`${userId}`);
+        // console.log(`${shop.shopOwner}`);
 
         // if (userId !== shop.shopOwner ) {
         //     return res.status(404).json({ status: 'fail', message: 'not the shop Owner' });
@@ -245,7 +245,7 @@ exports.deleteItemInShop = async (req, res) => {
 
 // Controller for adding a new partner to a shop
 exports.addPartner = async (req, res) => {
-    console.log('addPartner');
+    // console.log('addPartner');
     try {
         const { userId } = req.body;
         const tokenUserId = req.userId;
@@ -263,8 +263,8 @@ exports.addPartner = async (req, res) => {
             return res.status(404).json({ status: 'fail', message: 'Shop not found' });
         }
 
-        console.log(`${tokenUserId}`);
-        console.log(`${shop.shopOwner}`);
+        // console.log(`${tokenUserId}`);
+        // console.log(`${shop.shopOwner}`);
 
         if (String(shop.shopOwner) !== String(tokenUserId)) {
             return res.status(404).json({ status: 'fail', message: 'Not the shop owner' });

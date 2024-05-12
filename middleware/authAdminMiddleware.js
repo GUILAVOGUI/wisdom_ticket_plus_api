@@ -21,6 +21,8 @@ const authMiddleware = async (req, res, next) => {
         }
         console.log('pass 2');
 
+        console.log(`token ${token}`);
+
 
         // Verify the JWT token's signature using the JWT library's built-in verification
         const decodedToken = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET, { algorithms: ['HS256'] });

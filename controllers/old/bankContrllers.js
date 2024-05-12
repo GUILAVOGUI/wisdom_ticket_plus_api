@@ -395,7 +395,7 @@ const createDeposit = async (req, res) => {
 
     } catch (error) {
         // console.log('step 7');
-        // console.log(error);
+        console.log(error);
         console.error('Error creating deposit transaction:', error);
         res.status(500).json({ error: 'Error creating deposit transaction' });
     }

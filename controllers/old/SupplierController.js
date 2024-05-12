@@ -23,7 +23,7 @@ exports.createSupplier = async (req, res) => {
 
 // Add credit to supplier balance
 exports.creditBalance = async (req, res) => {
-    console.log('creditBalance');
+    // console.log('creditBalance');
     const { transactionType, currency, products, comment, date, imagebannerLink } = req.body;
     const { tel, userName } = req; // Assuming tel and userName are properties of req
     try {

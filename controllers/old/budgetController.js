@@ -37,7 +37,7 @@ const createBudget = async (req, res) => {
 
     } catch (error) {
         // res.status(500).json({ error: error.message });
-        // console.log(error);
+        console.log(error);
         res.status(500).json({ error: 'Name already exists' });
         // res.status(500).json('Number already Registered | Cet Numero deja enregister');
     }

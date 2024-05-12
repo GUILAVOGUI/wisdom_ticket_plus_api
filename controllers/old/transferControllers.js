@@ -6,7 +6,7 @@ const Transfers = require('../../models/old/transfer');
 
 // Create Transfer
 const createTransfer = async (req, res) => {
-    console.log('createTransfer');
+    // console.log('createTransfer');
     try {
         const transfer = new Transfers(req.body);
         console.log(transfer);

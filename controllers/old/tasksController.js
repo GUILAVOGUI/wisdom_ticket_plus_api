@@ -42,25 +42,25 @@ const getATaskById = async (req, res) => {
 
 // Update a task by ID
 const updateTaskById = async (req, res) => {
-    console.log('Updating a ticket by ID');
+    // console.log('Updating a ticket by ID');
     try {
         const { id } = req.params; // Get the ticket ID from request parameters
-        console.log(id);
+        // console.log(id);
 
         // Check if the ticket exists
         const task = await Task.findById(id);
 
-        console.log(`task ${task}`);
+        // console.log(`task ${task}`);
 
         if (!task) {
             return res.status(404).json({ error: 'task not found' });
         }
 
-        console.log(`previous task.deadline  = ${task.deadline}`);
-        console.log(`previous task.closingDate  = ${task.closingDate}`);
+        // console.log(`previous task.deadline  = ${task.deadline}`);
+        // console.log(`previous task.closingDate  = ${task.closingDate}`);
 
-        console.log(`req.body.closingDate  = ${req.body.closingDate}`);
-        console.log(`req.body.deadline  = ${req.body.deadline}`);
+        // console.log(`req.body.closingDate  = ${req.body.closingDate}`);
+        // console.log(`req.body.deadline  = ${req.body.deadline}`);
         // Update the task data
        task.taskName = req.body.taskName  || task.taskName,
        task.actions = req.body.actions  || task.actions,
@@ -77,8 +77,8 @@ const updateTaskById = async (req, res) => {
            task.date = req.body.date || task.date,
 
 
-            console.log(`current  task.deadline  = ${task.deadline}`);
-        console.log(`current  task.closingDate  = ${task.closingDate}`);
+        //     console.log(`current  task.deadline  = ${task.deadline}`);
+        // console.log(`current  task.closingDate  = ${task.closingDate}`);
 
         // Save the updated task
         await task.save();

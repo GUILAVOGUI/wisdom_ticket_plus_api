@@ -26,7 +26,7 @@ exports.createUser = async (req, res) => {
         // Hash Password code and PIN code
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        console.log(`hashedPassword ${hashedPassword}`);
+        // console.log(`hashedPassword ${hashedPassword}`);
         // Create user instance
         const user = new User({
             email,
@@ -37,7 +37,7 @@ exports.createUser = async (req, res) => {
             password: hashedPassword
         });
 
-        console.log(`user password ${user.password}`);
+        // console.log(`user password ${user.password}`);
 
         // Generate JWT token
         const tokenPayload = { userId: user._id, type: user.type, phoneNumber: user.phoneNumber };
@@ -100,21 +100,21 @@ exports.createUser = async (req, res) => {
 
 exports.login = async (req, res) => {
     const { phoneNumber, password } = req.body;
-    console.log(`phoneNumber ${phoneNumber}`);
-    console.log(`password ${password}`);
-    console.log('login Endpoint');
+    // console.log(`phoneNumber ${phoneNumber}`);
+    // console.log(`password ${password}`);
+    // console.log('login Endpoint');
 
     try {
         const user = await User.findOne({ phoneNumber });
         if (!user) {
-            console.log('user not found');
+            // console.log('user not found');
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        console.log(user.password);
+        // console.log(user.password);
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            console.log('invalid credentials');
+            // console.log('invalid credentials');
 
             return res.status(401).json({ error: 'Invalid credentials' });
         }
@@ -153,7 +153,7 @@ exports.login = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
     try {
         const userId = req.id
-        console.log(userId);
+        // console.log(userId);
         const users = await User.find();
         res.status(200).json({ status: 'success', data: users });
     } catch (err) {
@@ -279,6 +279,7 @@ exports.removeAction = async (req, res) => {
 
 // Controller for getting company info
 exports.getCompanyInfo = async (req, res) => {
+    console.log('getCompanyInfo');
     try {
         const userId = req.id
         console.log(userId);
@@ -287,6 +288,51 @@ exports.getCompanyInfo = async (req, res) => {
             return res.status(404).json({ status: 'error', message: 'Company info not found for this user' });
         }
         res.status(200).json({ status: 'success', data: user.companyProfile });
+        console.log(user.companyProfile);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+
+// Controller for getting user preference info
+exports.getUserPreference = async (req, res) => {
+
+    console.log('getUserPreference');
+    try {
+        const userId = req.id
+        console.log(userId);
+        const user = await User.findById(userId);
+        // if (!user ) {
+        //     console.log('Company info not found for this user');
+        //     return res.status(404).json({ status: 'error', message: 'Company info not found for this user' });
+        // }
+        res.status(200).json({ status: 'success', data: user.userPreference });
+        console.log(`data sent ${user.userPreference}`);
+    } catch (err) {
+        console.log(err);
+    
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+
+// Controller for updating user preference info
+exports.updateUserPreference = async (req, res) => {
+
+    console.log(`updateUserPreference`);
+    try {
+
+        const userId = req.id
+
+        const { language, timezone, region } = req.body;
+        console.log(language);
+        const user = await User.findByIdAndUpdate(userId, { userPreference: { language, timezone, region } }, { new: true });
+        if (!user) {
+            return res.status(404).json({ status: 'error', message: 'User not found' });
+        }
+        res.status(200).json({ status: 'success', data: user.userPreference });
     } catch (err) {
         console.log(err);
         res.status(500).json({ status: 'error', message: err.message });
@@ -300,12 +346,313 @@ exports.updateCompanyInfo = async (req, res) => {
         const userId = req.id
 
         const { logoImageLink, name, address, contactPhone, contactEmail } = req.body;
+        console.log(logoImageLink);
         const user = await User.findByIdAndUpdate(userId, { companyProfile: { logoImageLink, name, address, contactPhone, contactEmail } }, { new: true });
         if (!user) {
             return res.status(404).json({ status: 'error', message: 'User not found' });
         }
         res.status(200).json({ status: 'success', data: user.companyProfile });
     } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+
+
+// Controller for adding a user to adminTeamMember
+exports.addUserToAdminTeam = async (req, res) => {
+    console.log('addUserToAdminTeam');
+    try {
+        const userId = req.userId;
+
+        const { memberStatus, userInfo } = req.body;
+        console.log(userId);
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            console.log('User not found');
+            return res.status(404).json({ error: 'User not found' });
+        }
+        // console.log(memberStatus);
+        // console.log(userInfo);
+
+        // Check if the user already exists in the adminTeamMember array
+        const existingMember = user.adminTeamMember.find(member => member.userInfo.userId.toString() === userInfo.userId);
+
+        if (existingMember) {
+            console.log('User is already in admin team');
+            return res.status(400).json({ error: 'User is already in admin team' });
+        }
+
+        // If the user doesn't exist in the adminTeamMember array, find them by userId
+        const userToAdd = await User.findById(userInfo.userId);
+
+        if (!userToAdd) {
+            console.log('User to add not found');
+            return res.status(404).json({ error: 'User to add not found' });
+        }
+
+        // Update the inAdminTeam field for the user to true
+        userToAdd.inAdminTeam = true;
+        await userToAdd.save();
+
+        console.log(`userToAdd.inAdminTeam  ${userToAdd.inAdminTeam}`);
+        console.log(`userToAdd.name  ${userToAdd.name }`);
+
+        // Add the user to the adminTeamMember array
+        user.adminTeamMember.push({ memberStatus, userInfo });
+        await user.save();
+
+        res.status(200).json({ status: 'success' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+// Controller for removing a user from adminTeamMember
+exports.removeUserFromAdminTeam = async (req, res) => {
+    console.log('removeUserFromAdminTeam');
+    try {
+        const userId = req.userId;
+
+        const { memberId } = req.params; // Assuming memberId is passed as a parameter in the URL
+        console.log(userId);
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            console.log('User not found');
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Check if the member to remove exists in the adminTeamMember array
+        const memberIndex = user.adminTeamMember.findIndex(member => member.userInfo.userId.toString() === memberId);
+
+        if (memberIndex === -1) {
+            console.log('Member not found in admin team');
+            return res.status(400).json({ error: 'Member not found in admin team' });
+        }
+
+        // Retrieve the user to remove from the admin team
+        const userToRemove = await User.findById(memberId);
+
+        if (!userToRemove) {
+            console.log('User to remove not found');
+            return res.status(404).json({ error: 'User to remove not found' });
+        }
+
+        // Update the inAdminTeam field for the user to false
+        userToRemove.inAdminTeam = false;
+        await userToRemove.save();
+
+        // Remove the member from the adminTeamMember array
+        user.adminTeamMember.splice(memberIndex, 1);
+        await user.save();
+
+        res.status(200).json({ status: 'success' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+ 
+
+exports.getAllAdminTeamMembers = async (req, res) => {
+    try {
+        // Fetch the current user's ID from the request
+        const userId = req.userId;
+
+        // Find the current user
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Fetch all admin team members
+        const adminTeamMembers = user.adminTeamMember;
+
+        // Prepare array to store processed admin team members data
+        const processedAdminTeamMembers = [];
+
+        // Iterate through admin team members
+        for (const member of adminTeamMembers) {
+            // Find user details using userInfo.userId
+            const userDetails = await User.findById(member.userInfo.userId);
+
+            if (!userDetails) {
+                // Skip if user details not found
+                continue;
+            }
+
+            // Extract necessary fields from member and userDetails
+            const { memberStatus, userInfo } = member;
+            const { accessList } = userDetails;
+
+            // Initialize filteredAccessList to store filtered access
+            const filteredAccessList = {};
+
+            // Iterate through accessList to find activated access
+            for (const [accessKey, accessValue] of Object.entries(accessList)) {
+                if (accessValue.isActive) {
+                    // Add activated access to filteredAccessList
+                    filteredAccessList[accessKey] = accessValue;
+                }
+            }
+
+            // Add necessary fields and filtered accessList to user details
+            const processedMember = {
+                memberStatus,
+                userInfo,
+                accessList: filteredAccessList
+            };
+
+            // Push processed member to processedAdminTeamMembers array
+            processedAdminTeamMembers.push(processedMember);
+        }
+
+        // Return the processed admin team members with necessary fields and filtered accessList
+        res.status(200).json({ status: 'success', data: processedAdminTeamMembers });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+
+
+exports.updateUserAccessLevel = async (req, res) => {
+    try {
+        // Extract user ID from request parameters
+        const { userId } = req.params;
+
+        // Find the user by ID
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Extract the access level to activate from request body
+        const { accessLevel } = req.body;
+
+        // Check if the requested access level is valid
+        if (!['Super_Admin', 'EventManagementAdmin', 'CommunicationAdmin', 'SupportAdmin', 'AnalyticsAdmin', 'FinanceAdmin'].includes(accessLevel)) {
+            return res.status(400).json({ error: 'Invalid access level' });
+        }
+
+        // Deactivate the current activated access level
+        const currentActivatedLevel = Object.keys(user.accessList).find(level => user.accessList[level].isActive);
+        if (currentActivatedLevel) {
+            user.accessList[currentActivatedLevel].isActive = false;
+        }
+
+        // Activate the requested access level in the user's access list
+        user.accessList[accessLevel].isActive = true;
+
+        // Save the updated user
+        await user.save();
+
+        // Return success response
+        res.status(200).json({ status: 'success', message: 'Access level updated successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+
+
+exports.updateUserAccessAbilities = async (req, res) => {
+    try {
+        // Extract user ID from request parameters
+        const { userId } = req.params;
+
+        // Extract the level and abilities from request body
+        const { level, abilities } = req.body;
+
+        // Update the abilities of the requested level
+        const update = {};
+        for (const abilityKey in abilities) {
+            if (Object.hasOwnProperty.call(abilities, abilityKey)) {
+                const newValue = abilities[abilityKey];
+                // Construct the update object for nested fields
+                update[`accessList.${level}.abilities.${abilityKey}`] = newValue;
+            }
+        }
+
+        // Use findOneAndUpdate to update the nested fields
+        const result = await User.findByIdAndUpdate(
+            userId,
+            { $set: update },
+            { new: true } // Return the updated document
+        );
+
+        if (!result) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Return success response
+        res.status(200).json({ status: 'success', message: 'Access abilities updated successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+
+
+// Controller for updating a user in adminTeamMember
+exports.updateUserInAdminTeam = async (req, res) => {
+    try {
+        const { userId, memberId } = req.params;
+        const { memberStatus, userInfo } = req.body;
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const memberIndex = user.adminTeamMember.findIndex(member => member._id == memberId);
+
+        if (memberIndex === -1) {
+            return res.status(404).json({ error: 'User not found in adminTeamMember' });
+        }
+
+        user.adminTeamMember[memberIndex] = { memberStatus, userInfo };
+        await user.save();
+
+        res.status(200).json({ status: 'success', data: user });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+
+// Controller for deleting a user from adminTeamMember
+exports.deleteUserFromAdminTeam = async (req, res) => {
+    try {
+        const { userId, memberId } = req.params;
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const updatedAdminTeamMember = user.adminTeamMember.filter(member => member._id != memberId);
+        user.adminTeamMember = updatedAdminTeamMember;
+
+        await user.save();
+
+        res.status(200).json({ status: 'success', data: user });
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ status: 'error', message: err.message });
     }
 };

@@ -31,7 +31,7 @@ const checkAccess = (requiredEndpoint) => {
 
 
 router.post('/users', userController.createUser);
-router.get('/users', authMiddlewareUsers, userController.getAllUsers);
+router.get('/users', authAdminMiddleware, userController.getAllUsers);
 router.get('/users/:id', userController.getUserById);
 router.put('/users/:id', userController.updateUserById);
 
@@ -42,6 +42,8 @@ router.put('/user/company',  authMiddlewareUsers,userController.updateCompanyInf
 
 
 
+router.get('/user/userpreference', authMiddlewareUsers, userController.getUserPreference);
+router.put('/user/userpreference', authMiddlewareUsers, userController.updateUserPreference);
 
 // Admin
 router.delete('/users/:id', authAdminMiddleware, userController.deleteUserById);
@@ -52,6 +54,28 @@ router.put('/users/:id/adminupdateuser', authAdminMiddleware,userController.upda
 //   Special Actions
 router.post('/users/:id/actions', userController.addAction);
 router.delete('/users/:id/actions/:action', userController.removeAction);
+
+
+
+// Define routes for adminTeamMember operations
+router.post('/users/admin-team', authAdminMiddleware,userController.addUserToAdminTeam);
+
+// Define route for fetching all users in the admin team
+router.get('/admin/team/members', authAdminMiddleware, userController.getAllAdminTeamMembers);
+
+// Route to remove a user from adminTeamMember
+router.delete('/admin/team/member/:memberId', authAdminMiddleware,userController.removeUserFromAdminTeam);
+
+router.put('/users/:userId/admin-team/:memberId', authAdminMiddleware,userController.updateUserInAdminTeam);
+// router.delete('/users/:userId/admin-team/:memberId', authAdminMiddleware,userController.deleteUserFromAdminTeam);
+
+// Define route to update user access level
+router.put('/users/:userId/access-level', authAdminMiddleware, userController.updateUserAccessLevel);
+
+// Define route to update user access level Abilities
+router.put('/users/:userId/access-abilities', authAdminMiddleware, userController.updateUserAccessAbilities);
+
+
 
 
 // Login route

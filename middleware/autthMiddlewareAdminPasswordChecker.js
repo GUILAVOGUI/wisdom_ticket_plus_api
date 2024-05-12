@@ -17,7 +17,7 @@ const authMiddlewareAdminPasswordChecker = async (req, res, next) => {
 
         // console.log(`token: ${token}`);
 
-        console.log(`secretCode: ${secretCode}`);
+        // console.log(`secretCode: ${secretCode}`);
 
 
         if (!secretCode) {

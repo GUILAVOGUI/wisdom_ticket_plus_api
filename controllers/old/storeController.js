@@ -94,7 +94,7 @@ const getStoreById = async (req, res) => {
 
 
 const deleteStoreById = async (req, res) => {
-    console.log('deleteStoreById');
+    // console.log('deleteStoreById');
     try {
         const store = await Store.findByIdAndDelete(req.params.id);
         if (!store) {
@@ -102,7 +102,7 @@ const deleteStoreById = async (req, res) => {
         }
         res.status(204).json();
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).json({ error: error.message });
     }
 };
@@ -150,7 +150,7 @@ const createProduct = async (req, res) => {
 };
  
 const updateProductById = async (req, res) => {
-    console.log('updateProductById');
+    // console.log('updateProductById');
     try {
         const { productName, unitPrice, quantityInStock, type, status, minQuantityForAlert, expireDate, dateRegisteredInSystem, imagesLinks } = req.body;
         const store = await Store.findById(req.params.storeId);
@@ -191,7 +191,7 @@ const updateProductById = async (req, res) => {
 
  
 const deleteProductById = async (req, res) => {
-    console.log('deleteProductById');
+    // console.log('deleteProductById');
     try {
         const store = await Store.findById(req.params.storeId);
         if (!store) {
@@ -209,7 +209,7 @@ const deleteProductById = async (req, res) => {
         await store.save();
         res.status(204).json();
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).json({ error: error.message });
     }
 };

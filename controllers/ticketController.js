@@ -60,7 +60,7 @@ exports.getAllTickets = async (req, res) => {
 exports.findTicketsByUserId = async (req, res) => {
     try {
         const userId = String(req.id); // Convert req.id to string
-        console.log(`userId ${userId}`);
+        // console.log(`userId ${userId}`);
 
         let tickets = await Ticket.find({ 'listOfTicket.guest.userId': userId });
 

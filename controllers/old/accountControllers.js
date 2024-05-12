@@ -32,7 +32,7 @@ exports.getAllAccount = async (req,res) => {
 
 // Get all Account Info
 exports.getAllAccountsInfo = async (req, res) => {
-    console.log('getAllAccountsInfo');
+    // console.log('getAllAccountsInfo');
     try {
         const userId = req.id;
 
@@ -99,7 +99,7 @@ exports.deleteAccountById = async (req, res) => {
 };
  
 exports.createTransaction = async (req, res) => {
-    console.log('createTransaction');
+    // console.log('createTransaction');
     const { id } = req.params;
     const { amount, personName, comment, personTel } = req.body;
 
@@ -123,7 +123,7 @@ exports.createTransaction = async (req, res) => {
         }
 
         // Add transaction to historic with the determined type
-        console.log(`person Tel ${personTel} `);
+        // console.log(`person Tel ${personTel} `);
         account.historic.push({ amount: transactionAmount, personName, personTel, comment, type });
 
         await account.save();
@@ -187,7 +187,7 @@ exports.removeFromAccessList = async (req, res) => {
 
 // Controller function to add a new member to an account
 exports.addMemberToAccount = async (req, res) => {
-    console.log('addMemberToAccount');
+    // console.log('addMemberToAccount');
     try {
         const { name, phoneNumber, address } = req.body;
         const account = await Account.findById(req.params.id);
@@ -213,7 +213,7 @@ exports.addMemberToAccount = async (req, res) => {
  
 
 exports.deleteMemberFromAccount = async (req, res) => {
-    console.log('deleteMemberFromAccount');
+    // console.log('deleteMemberFromAccount');
     try {
         const account = await Account.findById(req.params.id);
         if (!account) {
@@ -221,7 +221,7 @@ exports.deleteMemberFromAccount = async (req, res) => {
         }
 
         const memberId = req.params.memberId;
-        console.log(`member id: ${memberId}`);
+        // console.log(`member id: ${memberId}`);
 
         // Find the member by ID within the account's members array
         const memberToDelete = account.members.find(member => member._id.toString() === memberId);
@@ -244,7 +244,7 @@ exports.deleteMemberFromAccount = async (req, res) => {
 };
 // Controller function to update a member's information in an account
 exports.updateMemberInfo = async (req, res) => {
-    console.log('updateMemberInfo');
+    // console.log('updateMemberInfo');
     try {
         const memberId = req.params.memberId;
 
@@ -267,11 +267,11 @@ exports.updateMemberInfo = async (req, res) => {
             if (req.body.hasOwnProperty(key)) {
                 // Check if the field exists in the memberToUpdate object
                 if (memberToUpdate.hasOwnProperty(key)) {
-                    console.log(`Updating ${key} from ${memberToUpdate[key]} to ${req.body[key]}`);
+                    // console.log(`Updating ${key} from ${memberToUpdate[key]} to ${req.body[key]}`);
                     memberToUpdate[key] = req.body[key];
                 } else {
                     // If the field doesn't exist, create it
-                    console.log(`Creating new field ${key} with value ${req.body[key]}`);
+                    // console.log(`Creating new field ${key} with value ${req.body[key]}`);
                     memberToUpdate[key] = req.body[key];
                 }
             }
