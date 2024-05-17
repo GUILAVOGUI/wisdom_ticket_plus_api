@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const Event = require('../models/eventModel');
 
 // Controller for creating a new user
 
@@ -156,6 +156,60 @@ exports.getAllUsers = async (req, res) => {
         // console.log(userId);
         const users = await User.find();
         res.status(200).json({ status: 'success', data: users });
+    } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+
+
+// // Controller for getting all organizers with their total validated events
+// exports.getAllOrganizersWithEventCount = async (req, res) => {
+//     try {
+//         // Find all users with type 'Organizer'
+//         const organizers = await User.find({ type: 'Organizer' });
+
+//         // Iterate over each organizer to find their validated events
+//         const organizersWithEventCount = await Promise.all(organizers.map(async (organizer) => {
+//             const validatedEventCount = await Event.countDocuments({ ownerId: organizer._id, status: 'Validated' });
+//             return {
+//                 ...organizer._doc, // Spread the organizer's data
+//                 totalEvents: validatedEventCount // Add the new field
+//             };
+//         }));
+
+//         res.status(200).json({ status: 'success', data: organizersWithEventCount });
+//     } catch (err) {
+//         res.status(500).json({ status: 'error', message: err.message });
+//     }
+// };
+
+// Controller for getting all organizers with their total validated events
+exports.getAllOrganizersWithEventCount = async (req, res) => {
+    console.log('getAllOrganizersWithEventCount');
+    try {
+        // Fetch all users with type 'Organizer'
+        const organizers = await User.find({ type: 'Organizer' });
+        // console.log(organizers);
+        // Initialize an array to hold the results
+        const results = [];
+
+        // Loop through each organizer and find their validated events
+        for (const organizer of organizers) {
+            const events = await Event.find({
+                ownerId: organizer._id,
+                status: 'Validated'
+            });
+            console.log(events);
+
+            // Add the organizer's data and the totalEvents count to the results array
+            results.push({
+                ...organizer.toObject(), // Convert mongoose document to plain object
+                totalEvent: events.length
+            });
+        }
+
+        res.status(200).json({ status: 'success', data: results });
     } catch (err) {
         res.status(500).json({ status: 'error', message: err.message });
     }
@@ -574,6 +628,10 @@ exports.updateUserAccessAbilities = async (req, res) => {
         // Extract the level and abilities from request body
         const { level, abilities } = req.body;
 
+        console.log(`userId ${userId}`);
+        console.log(`level ${level}`);
+        console.log(`abilities ${JSON.stringify(abilities)}`);
+
         // Update the abilities of the requested level
         const update = {};
         for (const abilityKey in abilities) {
@@ -598,7 +656,8 @@ exports.updateUserAccessAbilities = async (req, res) => {
         // Return success response
         res.status(200).json({ status: 'success', message: 'Access abilities updated successfully' });
     } catch (err) {
-        console.error(err);
+        // console.error(err);
+        console.log(`err.message ${err.message}`);
         res.status(500).json({ status: 'error', message: err.message });
     }
 };

@@ -76,6 +76,11 @@ router.put('/users/:userId/access-level', authAdminMiddleware, userController.up
 router.put('/users/:userId/access-abilities', authAdminMiddleware, userController.updateUserAccessAbilities);
 
 
+// New route for getting all organizers with their total validated events
+router.get('/organizers-with-event-count', authAdminMiddleware,userController.getAllOrganizersWithEventCount);
+
+
+
 
 
 // Login route
