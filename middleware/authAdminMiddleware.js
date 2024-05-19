@@ -17,11 +17,13 @@ const authMiddleware = async (req, res, next) => {
         const token = req.header('Authorization');
 
         if (!token) {
+            console.log(token);
+            
             return res.status(401).json({ error: 'Authentication failed' });
         }
         console.log('pass 2');
 
-        console.log(`token ${token}`);
+        // console.log(`token ${token}`);
 
 
         // Verify the JWT token's signature using the JWT library's built-in verification

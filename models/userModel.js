@@ -26,7 +26,10 @@ const companyProfileSchema = new mongoose.Schema({
     name: String,
     address: String,
     contactPhone: String,
-    contactEmail: String
+    contactEmail: String,
+    description: String,
+    profileLink: String,
+
 });
 
 // Define a sub-schema for user preferences
@@ -66,6 +69,9 @@ const userSchema = new mongoose.Schema({
         }
     },
     status: {
+        type: String,
+    },
+    statusChangeReason: {
         type: String,
     },
     inAdminTeam: {

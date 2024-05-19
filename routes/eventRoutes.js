@@ -50,6 +50,10 @@ router.delete('/events/:eventId/revenues/:revenueId', eventController.deleteReve
 
 
 
+// New route to get events for a specific user
+router.post('/events/user', eventController.getUserEvents);
+
+
 
 
 

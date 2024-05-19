@@ -32,7 +32,14 @@ const checkAccess = (requiredEndpoint) => {
 
 router.post('/users', userController.createUser);
 router.get('/users', authAdminMiddleware, userController.getAllUsers);
+router.get('/admin/users/:id', authAdminMiddleware, userController.adminGetUserById);
+
+
+
+
 router.get('/users/:id', userController.getUserById);
+
+
 router.put('/users/:id', userController.updateUserById);
 
 
@@ -48,7 +55,7 @@ router.put('/user/userpreference', authMiddlewareUsers, userController.updateUse
 // Admin
 router.delete('/users/:id', authAdminMiddleware, userController.deleteUserById);
 
-// Admin
+// Admin update user by ID
 router.put('/users/:id/adminupdateuser', authAdminMiddleware,userController.updateUserByIdByAdmin)
 
 //   Special Actions

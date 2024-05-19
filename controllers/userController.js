@@ -200,7 +200,7 @@ exports.getAllOrganizersWithEventCount = async (req, res) => {
                 ownerId: organizer._id,
                 status: 'Validated'
             });
-            console.log(events);
+            // console.log(events);
 
             // Add the organizer's data and the totalEvents count to the results array
             results.push({
@@ -217,6 +217,19 @@ exports.getAllOrganizersWithEventCount = async (req, res) => {
 
 // Controller for getting a single user by ID
 exports.getUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ status: 'fail', message: 'User not found' });
+        }
+        res.status(200).json({ status: 'success', data: user });
+    } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+// Controller for getting a single user by ID
+exports.adminGetUserById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
@@ -250,25 +263,27 @@ exports.updateUserById = async (req, res) => {
     }
 };
 
-
 // Admin Controller for updating a user by ID
 exports.updateUserByIdByAdmin = async (req, res) => {
+    console.log('updateUserByIdByAdmin');
     try {
-        const {...updateData } = req.body;
-        // Exclude the fields that should not be updated
-        const allowedUpdates = { ...updateData };
+        const updateData = req.body;
+        console.log(`updateData ${updateData}`);
 
-        const user = await User.findByIdAndUpdate(req.params.id, allowedUpdates, {
+        const user = await User.findByIdAndUpdate(req.params.id, updateData, {
             new: true,
             runValidators: true
         });
+        console.log(`user status ${user ? user.status : 'not found'}`);
 
         if (!user) {
             return res.status(404).json({ status: 'fail', message: 'User not found' });
         }
+        console.log('updateUserByIdByAdmin Successfully');
 
         res.status(200).json({ status: 'success', data: user });
     } catch (err) {
+        console.log(err);
         res.status(400).json({ status: 'fail', message: err.message });
     }
 };
@@ -336,13 +351,13 @@ exports.getCompanyInfo = async (req, res) => {
     console.log('getCompanyInfo');
     try {
         const userId = req.id
-        console.log(userId);
+        // console.log(userId);
         const user = await User.findById(userId);
         if (!user || !user.companyProfile) {
             return res.status(404).json({ status: 'error', message: 'Company info not found for this user' });
         }
         res.status(200).json({ status: 'success', data: user.companyProfile });
-        console.log(user.companyProfile);
+        // console.log(user.companyProfile);
     } catch (err) {
         console.log(err);
         res.status(500).json({ status: 'error', message: err.message });
@@ -356,14 +371,14 @@ exports.getUserPreference = async (req, res) => {
     console.log('getUserPreference');
     try {
         const userId = req.id
-        console.log(userId);
+        // console.log(userId);
         const user = await User.findById(userId);
         // if (!user ) {
         //     console.log('Company info not found for this user');
         //     return res.status(404).json({ status: 'error', message: 'Company info not found for this user' });
         // }
         res.status(200).json({ status: 'success', data: user.userPreference });
-        console.log(`data sent ${user.userPreference}`);
+        // console.log(`data sent ${user.userPreference}`);
     } catch (err) {
         console.log(err);
     
@@ -381,7 +396,7 @@ exports.updateUserPreference = async (req, res) => {
         const userId = req.id
 
         const { language, timezone, region } = req.body;
-        console.log(language);
+        // console.log(language);
         const user = await User.findByIdAndUpdate(userId, { userPreference: { language, timezone, region } }, { new: true });
         if (!user) {
             return res.status(404).json({ status: 'error', message: 'User not found' });
@@ -400,7 +415,7 @@ exports.updateCompanyInfo = async (req, res) => {
         const userId = req.id
 
         const { logoImageLink, name, address, contactPhone, contactEmail } = req.body;
-        console.log(logoImageLink);
+        // console.log(logoImageLink);
         const user = await User.findByIdAndUpdate(userId, { companyProfile: { logoImageLink, name, address, contactPhone, contactEmail } }, { new: true });
         if (!user) {
             return res.status(404).json({ status: 'error', message: 'User not found' });
@@ -420,7 +435,7 @@ exports.addUserToAdminTeam = async (req, res) => {
         const userId = req.userId;
 
         const { memberStatus, userInfo } = req.body;
-        console.log(userId);
+        // console.log(userId);
 
         const user = await User.findById(userId);
 

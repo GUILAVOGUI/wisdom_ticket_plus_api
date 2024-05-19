@@ -414,3 +414,22 @@ exports.deleteRevenue = async (req, res) => {
     }
 };
 
+
+
+// New controller function
+exports.getUserEvents = async (req, res) => {
+    console.log('getUserEvents');
+    const userId = req.body.data.userId;
+    console.log(userId);
+
+    if (!userId) {
+        return res.status(400).json({ status: 'error', message: 'User ID is required' });
+    }
+
+    try {
+        const userEvents = await Event.find({ ownerId: userId });
+        res.status(200).json({ status: 'success', data: userEvents });
+    } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
