@@ -8,7 +8,7 @@ const authMiddleware = async (req, res, next) => {
     console.log('auth checking..');
     try {
         const token = req.header('Authorization');
-        // console.log(`token: ${token}`);
+        console.log(`token: ${token}`);
 
         if (!token) {
             return res.status(401).json({ error: 'Middleware From AuthUsers Authorization token missing' });

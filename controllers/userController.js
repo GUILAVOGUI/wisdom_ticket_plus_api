@@ -137,9 +137,9 @@ exports.login = async (req, res) => {
 
         // Prepare response
         const { _id: userID, name, token: userToken, role: userRole, userSpecialRole, type: userType, userProfileImage } = user;
-        const userIDString = String(userID); // Convert userID to a string
-        const lastSixDigitsOfUserID = userIDString.slice(-6); // Extract the last 6 digits
-        res.header('Authorization', `Bearer ${token}`).json({ userID: lastSixDigitsOfUserID, name, userToken, userRole, userType, userSpecialRole, userProfileImage });
+        // const userIDString = String(userID); // Convert userID to a string
+        // const lastSixDigitsOfUserID = userIDString.slice(-6); // Extract the last 6 digits
+        res.header('Authorization', `Bearer ${token}`).json({ userID: userID, name, userToken, userRole, userType, userSpecialRole, userProfileImage });
 
     } catch (error) {
         console.log(error);
@@ -162,28 +162,72 @@ exports.getAllUsers = async (req, res) => {
 };
 
 
+// Controller to add a new event to the eventWishList
+exports.addToEventWishList = async (req, res) => {
+    try {
+        const { eventId } = req.body;
+        const userId = req.id;
 
-// // Controller for getting all organizers with their total validated events
-// exports.getAllOrganizersWithEventCount = async (req, res) => {
-//     try {
-//         // Find all users with type 'Organizer'
-//         const organizers = await User.find({ type: 'Organizer' });
+        if (!eventId) {
+            return res.status(400).json({ status: 'error', message: 'Event ID is required' });
+        }
 
-//         // Iterate over each organizer to find their validated events
-//         const organizersWithEventCount = await Promise.all(organizers.map(async (organizer) => {
-//             const validatedEventCount = await Event.countDocuments({ ownerId: organizer._id, status: 'Validated' });
-//             return {
-//                 ...organizer._doc, // Spread the organizer's data
-//                 totalEvents: validatedEventCount // Add the new field
-//             };
-//         }));
+        const user = await User.findById(userId);
 
-//         res.status(200).json({ status: 'success', data: organizersWithEventCount });
-//     } catch (err) {
-//         res.status(500).json({ status: 'error', message: err.message });
-//     }
-// };
+        if (!user) {
+            return res.status(404).json({ status: 'error', message: 'User not found' });
+        }
 
+        // Check if the eventId already exists in the eventWishList
+        const eventExists = user.eventWishList.some(event => event.eventId.toString() === eventId);
+
+        if (eventExists) {
+            return res.status(409).json({ status: 'error', message: 'Event already in wishlist' });
+        }
+
+        user.eventWishList.push({ eventId });
+        await user.save();
+
+        res.status(200).json({ status: 'success', data: user.eventWishList });
+    } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+
+// Controller to remove an event from the eventWishList by eventId
+exports.removeFromEventWishList = async (req, res) => {
+    try {
+        const { eventId } = req.body;
+        const userId = req.id;
+
+        if (!eventId) {
+            return res.status(400).json({ status: 'error', message: 'Event ID is required' });
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ status: 'error', message: 'User not found' });
+        }
+
+        // Use MongoDB's $pull operator to remove the event with the given eventId
+        await User.updateOne(
+            { _id: userId },
+            { $pull: { eventWishList: { eventId: eventId } } }
+        );
+
+        const updatedUser = await User.findById(userId);
+
+        res.status(200).json({ status: 'success', data: updatedUser.eventWishList });
+    } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+
+
+ 
 // Controller for getting all organizers with their total validated events
 exports.getAllOrganizersWithEventCount = async (req, res) => {
     console.log('getAllOrganizersWithEventCount');

@@ -2,29 +2,7 @@ const mongoose = require('mongoose');
 
 
 
-// Define a sub-schema for the ticket details
-// const ticketSchema = new mongoose.Schema({
-//     type: String,
-//     price: Number,
-//     availableAmount: Number
-// });
-
-// Define a sub-schema for the validity details
-// const validitySchema = new mongoose.Schema({
-//     type: String,       // Type of ticket the promo will apply to
-//     startDate: Date,    // Start date of validity period
-//     endDate: Date       // End date of validity period
-// });
-
-
-// Define a sub-schema for the items
-// const itemSchema = new mongoose.Schema({
-//     _id: mongoose.Schema.Types.ObjectId, // MongoDB ObjectId for the item
-//     name: String,
-//     price: Number,
-//     quantity: Number
-// });
-
+ 
 // Define a sub-schema for revenue with currency
 const revenueSchema = new mongoose.Schema({
     amount: {

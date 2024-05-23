@@ -88,6 +88,13 @@ router.get('/organizers-with-event-count', authAdminMiddleware,userController.ge
 
 
 
+// Route to add a new event to the eventWishList
+router.post('/eventWishList/add', authMiddlewareUsers,userController.addToEventWishList);
+
+// Route to remove an event from the eventWishList
+router.post('/eventWishList/remove', authMiddlewareUsers,userController.removeFromEventWishList);
+
+
 
 
 // Login route

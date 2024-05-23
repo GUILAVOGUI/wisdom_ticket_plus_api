@@ -105,6 +105,15 @@ const userSchema = new mongoose.Schema({
         shopName: String,
         item: String
     }],
+    eventWishList: [
+        {
+            eventId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Event',
+                required: false
+            }
+        }
+    ],
     teamMember: [{
         memberStatus: String,
         userRole: String,

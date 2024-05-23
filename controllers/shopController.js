@@ -53,6 +53,8 @@ exports.getAllShops = async (req, res) => {
 //     }
 // };
 
+
+
 // Controller for getting shops owned by the user
 exports.getShopsByUserId = async (req, res) => {
     try {
@@ -72,6 +74,29 @@ exports.getShopsByUserId = async (req, res) => {
         res.status(500).json({ status: 'error', message: err.message });
     }
 };
+
+
+
+// Controller for getting shops to Client user
+exports.getShopsByOwnerId = async (req, res) => {
+    try {
+        const userId = req.body;
+
+        // Find all shops where the shop owner matches the user's ID
+        // or the shopPartners array contains an object with the user's ID
+        const shops = await Shop.find({
+            $or: [
+                { shopOwner: userId },
+                { 'shopPartners.userId': userId }
+            ]
+        });
+
+        res.status(200).json({ status: 'success', data: shops });
+    } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
 
 
 
